@@ -1,318 +1,203 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>cnj</groupId>
-    <artifactId>parent</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
-
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.1.RELEASE</version>
-        <relativePath/>
-    </parent>
-    <properties>
-        <java.version>
-            1.8
-        </java.version>
-
-        <spring-cloud-dependencies.version>
-            Finchley.M9
-        </spring-cloud-dependencies.version>
-        <!--
-                &lt;!&ndash; Spring Batch &ndash;&gt;
-                <spring-batch.version>4.0.0.M1</spring-batch.version>
-
-                &lt;!&ndash; Spring Cloud &ndash;&gt;
-                <spring-cloud-task.version>1.1.2.RELEASE</spring-cloud-task.version>
-
-                &lt;!&ndash; <spring-cloud-dataflow.version>1.1.0.RELEASE</spring-cloud-dataflow.version> &ndash;&gt;
-
-                <spring-cloud-dataflow.version>1.2.0.RELEASE</spring-cloud-dataflow.version>
-
-                &lt;!&ndash; General &ndash;&gt;
-                <bootiful.version>1.0.0-SNAPSHOT</bootiful.version>
-
-
-
-                &lt;!&ndash; to support the reactive cloud foundry client &ndash;&gt;
-                <cloudfoundry-client.version>2.9.0.RELEASE</cloudfoundry-client.version>
-                <reactor-core.version>3.0.6.RELEASE</reactor-core.version>
-                <reactor-netty.version>0.6.2.RELEASE</reactor-netty.version>-->
-    </properties>
-    <build>
-        <pluginManagement>
-            <plugins>
-                <!--       <plugin>
-                           <groupId>net.revelc.code</groupId>
-                           <artifactId>formatter-maven-plugin</artifactId>
-                           <version>0.5.2</version>
-
-                           <inherited>true</inherited>
-
-                           <configuration>
-                               <configFile>eclipse/eclipse-code-formatter.xml</configFile>
-                               <directories>
-                                   <directory>${project.build.sourceDirectory}</directory>
-                                   <directory>${project.build.scriptSourceDirectory}</directory>
-                                   <directory>${project.basedir}/src/integration-test/java</directory>
-                                   <directory>${project.build.testSourceDirectory}</directory>
-                               </directories>
-                           </configuration>
-                           <dependencies>
-                               <dependency>
-                                   <groupId>cnj</groupId>
-                                   <artifactId>project-support</artifactId>
-                                   <version>1.0.0-SNAPSHOT</version>
-                               </dependency>
-                           </dependencies>
-                       </plugin>-->
-
-                <plugin>
-                    <groupId>io.spring.javaformat</groupId>
-                    <artifactId>spring-javaformat-maven-plugin</artifactId>
-                    <version>0.0.1-SNAPSHOT</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.jfrog.buildinfo</groupId>
-                    <artifactId>artifactory-maven-plugin</artifactId>
-                    <version>2.4.0</version>
-                    <inherited>false</inherited>
-                    <executions>
-                        <execution>
-                            <id>build-info</id>
-                            <goals>
-                                <goal>publish</goal>
-                            </goals>
-                            <configuration>
-                                <deployProperties>
-                                    <build.vcsRevision>{{TRAVIS_COMMIT}}
-                                    </build.vcsRevision>
-                                </deployProperties>
-                                <publisher>
-                                    <contextUrl>
-                                        https://cloudnativejava.artifactoryonline.com/cloudnativejava
-                                    </contextUrl>
-                                    <username>${env.ARTIFACTORY_USERNAME}
-                                    </username>
-                                    <password>${env.ARTIFACTORY_PASSWORD}
-                                    </password>
-                                    <repoKey>libs-release-local</repoKey>
-                                    <snapshotRepoKey>libs-snapshot-local
-                                    </snapshotRepoKey>
-                                </publisher>
-                                <buildInfo>
-                                    <agentName>Travis CI</agentName>
-                                    <buildNumber>{{TRAVIS_BUILD_NUMBER}}
-                                    </buildNumber>
-                                    <buildUrl>
-                                        http://travis-ci.org/{{TRAVIS_REPO_SLUG}}/builds/{{TRAVIS_BUILD_ID}}
-                                    </buildUrl>
-                                    <principal>{{USER}}</principal>
-                                    <vcsRevision>{{TRAVIS_COMMIT}}</vcsRevision>
-                                </buildInfo>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <finalName>${project.artifactId}</finalName>
-        <plugins>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.9.1</version>
-                <executions>
-                    <!-- Add a new source directory to our build -->
-                    <execution>
-                        <id>add-integration-test-sources</id>
-                        <phase>generate-test-sources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <!-- Configures the source directory of our integration tests -->
-                            <sources>
-                                <source>src/integration-test/java</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                    <!-- Add a new resource directory to our build -->
-                    <execution>
-                        <id>add-integration-test-resources</id>
-                        <phase>generate-test-resources</phase>
-                        <goals>
-                            <goal>add-test-resource</goal>
-                        </goals>
-                        <configuration>
-                            <resources>
-                                <!--
-                                Placeholders that are found from the files located in the configured resource
-                                directories are replaced with the property values found from the profile
-                                specific configuration file.
-                                -->
-                                <resource>
-                                    <filtering>true</filtering>
-                                    <directory>src/integration-test/resources
-                                    </directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>**/*IT.java</exclude>
-                    </excludes>
-                    <argLine>-Xms1024m -Xmx2048m</argLine>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>integration-tests</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <includes>
-                        <include>**/*IT.java</include>
-                    </includes>
-                    <argLine>-Xms1024m -Xmx2048m</argLine>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.jfrog.buildinfo</groupId>
-                <artifactId>artifactory-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>cnj</groupId>
-                <version>${project.version}</version>
-                <artifactId>it-support</artifactId>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-cloudfoundry-commons</artifactId>
-                <version>${spring-cloud-cloudfoundry.version}</version>
-            </dependency>
-
-            <!--   <dependency>
-                   <groupId>org.cloudfoundry</groupId>
-                   <artifactId>cloudfoundry-client-reactor</artifactId>
-                   <version>${cloudfoundry-client.version}</version>
-               </dependency>
-               <dependency>
-                   <groupId>org.cloudfoundry</groupId>
-                   <artifactId>cloudfoundry-operations</artifactId>
-                   <version>${cloudfoundry-client.version}</version>
-               </dependency>
-               <dependency>
-                   <groupId>io.projectreactor</groupId>
-                   <artifactId>reactor-core</artifactId>
-                   <version>${reactor-core.version}</version>
-               </dependency>
-               <dependency>
-                   <groupId>io.projectreactor.ipc</groupId>
-                   <artifactId>reactor-netty</artifactId>
-                   <version>${reactor-netty.version}</version>
-               </dependency>-->
-
-            <!--   <dependency>
-                   <groupId>org.springframework.cloud</groupId>
-                   <artifactId>spring-cloud-dataflow-dependencies</artifactId>
-                   <version>${spring-cloud-dataflow.version}</version>
-                   <type>pom</type>
-                   <scope>import</scope>
-               </dependency>-->
-            <!--  <dependency>
-                  <groupId>org.springframework.cloud</groupId>
-                  <artifactId>spring-cloud-task-dependencies</artifactId>
-                  <version>${spring-cloud-task.version}</version>
-                  <type>pom</type>
-                  <scope>import</scope>
-              </dependency>-->
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud-dependencies.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <!--           <dependency>
-                           <groupId>org.springframework.cloud.stream.app</groupId>
-                           <artifactId>app-starters-core-dependencies</artifactId>
-                           <version>1.1.0.RC1</version>
-                           <type>pom</type>
-                           <scope>import</scope>
-                       </dependency>
-                       <dependency>
-                           <groupId>org.springframework.cloud.task.app</groupId>
-                           <artifactId>spring-cloud-task-app-dependencies</artifactId>
-                           <version>1.0.1.RELEASE</version>
-                           <type>pom</type>
-                           <scope>import</scope>
-                       </dependency>-->
-        </dependencies>
-    </dependencyManagement>
-
-    <repositories>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>central</id>
-            <name>libs-release</name>
-            <url>
-                https://cloudnativejava.artifactoryonline.com/cloudnativejava/libs-release
-            </url>
-        </repository>
-        <repository>
-            <snapshots/>
-            <id>snapshots</id>
-            <name>libs-snapshot</name>
-            <url>
-                https://cloudnativejava.artifactoryonline.com/cloudnativejava/libs-snapshot
-            </url>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>central</id>
-            <name>plugins-release</name>
-            <url>
-                https://cloudnativejava.artifactoryonline.com/cloudnativejava/plugins-release
-            </url>
-        </pluginRepository>
-        <pluginRepository>
-            <snapshots/>
-            <id>snapshots</id>
-            <name>plugins-snapshot</name>
-            <url>
-                https://cloudnativejava.artifactoryonline.com/cloudnativejava/plugins-snapshot
-            </url>
-        </pluginRepository>
-    </pluginRepositories>
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>cnj</groupId>
+	<artifactId>parent</artifactId>
+	<version>2.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.0.1.RELEASE</version>
+		<relativePath />
+	</parent>
+	<properties>
+		<java.version>1.8</java.version>
+		<spring-cloud-dependencies.version>Finchley.M9</spring-cloud-dependencies.version>
+	</properties>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>io.spring.javaformat</groupId>
+					<artifactId>spring-javaformat-maven-plugin</artifactId>
+					<version>0.0.1-SNAPSHOT</version>
+				</plugin>
+				<plugin>
+					<groupId>org.jfrog.buildinfo</groupId>
+					<artifactId>artifactory-maven-plugin</artifactId>
+					<version>2.4.0</version>
+					<inherited>false</inherited>
+					<executions>
+						<execution>
+							<id>build-info</id>
+							<goals>
+								<goal>publish</goal>
+							</goals>
+							<configuration>
+								<deployProperties>
+									<build.vcsRevision>{{TRAVIS_COMMIT}}
+									</build.vcsRevision>
+								</deployProperties>
+								<publisher>
+									<contextUrl>
+										https://cloudnativejava.artifactoryonline.com/cloudnativejava
+									</contextUrl>
+									<username>${env.ARTIFACTORY_USERNAME}
+									</username>
+									<password>${env.ARTIFACTORY_PASSWORD}
+									</password>
+									<repoKey>libs-release-local</repoKey>
+									<snapshotRepoKey>libs-snapshot-local
+									</snapshotRepoKey>
+								</publisher>
+								<buildInfo>
+									<agentName>Travis CI</agentName>
+									<buildNumber>{{TRAVIS_BUILD_NUMBER}}
+									</buildNumber>
+									<buildUrl>
+										http://travis-ci.org/{{TRAVIS_REPO_SLUG}}/builds/{{TRAVIS_BUILD_ID}}
+									</buildUrl>
+									<principal>{{USER}}</principal>
+									<vcsRevision>{{TRAVIS_COMMIT}}</vcsRevision>
+								</buildInfo>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<finalName>${project.artifactId}</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<!-- Add a new source directory to our build -->
+					<execution>
+						<id>add-integration-test-sources</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<!-- Configures the source directory of our integration tests -->
+							<sources>
+								<source>src/integration-test/java</source>
+							</sources>
+						</configuration>
+					</execution>
+					<!-- Add a new resource directory to our build -->
+					<execution>
+						<id>add-integration-test-resources</id>
+						<phase>generate-test-resources</phase>
+						<goals>
+							<goal>add-test-resource</goal>
+						</goals>
+						<configuration>
+							<resources>
+								<!-- Placeholders that are found from the files located in the configured
+									resource directories are replaced with the property values found from the
+									profile specific configuration file. -->
+								<resource>
+									<filtering>true</filtering>
+									<directory>src/integration-test/resources
+									</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>**/*IT.java</exclude>
+					</excludes>
+					<argLine>-Xms1024m -Xmx2048m</argLine>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>integration-tests</id>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<includes>
+						<include>**/*IT.java</include>
+					</includes>
+					<argLine>-Xms1024m -Xmx2048m</argLine>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jfrog.buildinfo</groupId>
+				<artifactId>artifactory-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>cnj</groupId>
+				<version>${project.version}</version>
+				<artifactId>it-support</artifactId>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-cloudfoundry-commons</artifactId>
+				<version>${spring-cloud-cloudfoundry.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud-dependencies.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<repositories>
+		<repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>central</id>
+			<name>libs-release</name>
+			<url>https://cloudnativejava.artifactoryonline.com/cloudnativejava/libs-release</url>
+		</repository>
+		<repository>
+			<snapshots />
+			<id>snapshots</id>
+			<name>libs-snapshot</name>
+			<url>https://cloudnativejava.artifactoryonline.com/cloudnativejava/libs-snapshot</url>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>central</id>
+			<name>plugins-release</name>
+			<url>https://cloudnativejava.artifactoryonline.com/cloudnativejava/plugins-release</url>
+		</pluginRepository>
+		<pluginRepository>
+			<snapshots />
+			<id>snapshots</id>
+			<name>plugins-snapshot</name>
+			<url>https://cloudnativejava.artifactoryonline.com/cloudnativejava/plugins-snapshot</url>
+		</pluginRepository>
+	</pluginRepositories>
 </project>
